@@ -1,6 +1,7 @@
 import {
   addMissionChallenge,
   getUserMissionInfo,
+  getUserMissionsByUserId,
 } from "../repositories/mission.repository.js";
 import { responseFromMyMission } from "../dtos/mission.dto.js";
 
@@ -15,5 +16,11 @@ export const challengeMission = async (data) => {
   const mission = await getUserMissionInfo(myMissionId);
 
   // 도전 정보 반환 (사용자 정보와 함께)
+  return responseFromMyMission({ mission });
+};
+
+//본인 미션 리스트 조회
+export const listUserMissions = async (userId) => {
+  const mission = await getUserMissionsByUserId(parseInt(userId));
   return responseFromMyMission({ mission });
 };

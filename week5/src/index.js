@@ -2,12 +2,19 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import { handleUserSignUp } from "./controllers/user.controller.js";
-import { handleWriteReview } from "./controllers/review.controller.js";
-import { handleChallengeMission } from "./controllers/mission.controller.js";
+import {
+  handleWriteReview,
+  handleListUserReviews,
+} from "./controllers/review.controller.js";
+import {
+  handleChallengeMission,
+  handleListUserMissions,
+} from "./controllers/mission.controller.js";
 import {
   handleRegisterStore,
   handleRegisterMission,
 } from "./controllers/store.controller.js";
+import { setUserIdFromAuthorizationHeader } from "./middleware/setUserIdFromAuthorizationHeader.js";
 
 dotenv.config();
 
@@ -27,6 +34,19 @@ app.post("/api/v1/review", handleWriteReview);
 app.post("/api/v1/missions/challenge", handleChallengeMission);
 app.post("/api/v1/stores/registration", handleRegisterStore);
 app.post("/api/v1/stores/add-mission", handleRegisterMission);
+
+// app.get("/api/v1/my-mission/:userId/list", handleListUserMissions);
+app.get(
+  "/api/v1/my-mission/list",
+  setUserIdFromAuthorizationHeader,
+  handleListUserMissions
+);
+
+app.get(
+  "/api/v1//user/reviews/list",
+  setUserIdFromAuthorizationHeader,
+  handleListUserReviews
+);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

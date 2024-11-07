@@ -6,7 +6,6 @@ export const bodyToMyMission = (body) => {
 };
 
 export const responseFromMyMission = ({ mission }) => {
-  const missionData = mission[0];
   return {
     mission: mission.map((data) => data),
   };
