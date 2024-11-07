@@ -14,19 +14,22 @@ export const bodyToUser = (body) => {
 };
 
 export const responseFromUser = ({ user, preferences }) => {
-  const userData = user[0];
+  const preferFoods = preferences.map((pref) => pref.preferencesId);
   return {
-    user: {
-      id: userData.id,
-      name: userData.name,
-      nickname: userData.nickname,
-      email: userData.email,
-      gender: userData.gender,
-      birth: userData.birth,
-      address: userData.address,
-      detailAddress: userData.detail_address,
-      preferences: preferences.preferences,
-    },
-    preferences: preferences.map((pref) => pref.food_type),
+    email: user.email,
+    name: user.name,
+    preferences: preferFoods,
+    // user: {
+    //   id: userData.id,
+    //   name: userData.name,
+    //   nickname: userData.nickname,
+    //   email: userData.email,
+    //   gender: userData.gender,
+    //   birth: userData.birth,
+    //   address: userData.address,
+    //   detailAddress: userData.detail_address,
+    //   preferences: preferences.preferences,
+    // },
+    // preferences: preferences.map((pref) => pref.food_type),
   };
 };
