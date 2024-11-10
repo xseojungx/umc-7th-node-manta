@@ -5,6 +5,13 @@ export const bodyToMyMission = (body) => {
   };
 };
 
+export const bodyToMyMissionUsingToken = (userId, body) => {
+  return {
+    userId: userId,
+    myMissionId: body.myMissionId,
+  };
+};
+
 export const responseFromMyMission = ({ mission }) => {
   return {
     mission: mission.map((data) => data),

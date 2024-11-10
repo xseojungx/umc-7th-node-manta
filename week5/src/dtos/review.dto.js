@@ -11,8 +11,9 @@ export const bodyToReview = (body) => {
 };
 
 //store참고해서 값 반환되게 수정 필요
-export const responseFromReview = ({ review }) => {
+export const responseFromReview = ({ reviews }) => {
+  console.log(reviews);
   return {
-    review: review.map((data) => data),
+    review: reviews.map((data) => data),
   };
 };

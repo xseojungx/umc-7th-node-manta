@@ -1,8 +1,13 @@
 import { StatusCodes } from "http-status-codes";
-import { bodyToMyMission } from "../dtos/mission.dto.js";
+import {
+  bodyToMyMission,
+  bodyToMyMissionUsingToken,
+} from "../dtos/mission.dto.js";
 import {
   challengeMission,
   listUserMissions,
+  listStoreMissions,
+  missionSuccess,
 } from "../services/mission.service.js";
 
 export const handleChallengeMission = async (req, res, next) => {
@@ -13,12 +18,15 @@ export const handleChallengeMission = async (req, res, next) => {
   res.status(StatusCodes.OK).json({ result: mission });
 };
 
-// export const handleListUserMissions = async (req, res, next) => {
-//   console.log("Received userId:", req.params.userId); // userId 값 확인용 콘솔 로그
+export const handleMissionSuccess = async (req, res, next) => {
+  console.log("미션 성공을 요청했습니다");
+  console.log("body:", req.body); // 값이 잘 들어오나 확인하기 위한 테스트용
 
-//   const missions = await listUserMissions(parseInt(req.params.userId));
-//   res.status(StatusCodes.OK).json(missions);
-// };
+  const mission = await missionSuccess(
+    bodyToMyMissionUsingToken(req.userId, req.body)
+  );
+  res.status(StatusCodes.OK).json({ result: mission });
+};
 
 export const handleListUserMissions = async (req, res, next) => {
   try {
@@ -26,5 +34,14 @@ export const handleListUserMissions = async (req, res, next) => {
     res.status(StatusCodes.OK).json(missions);
   } catch (error) {
     next(error);
+  }
+};
+
+export const handleListStoreMissions = async (req, res, next) => {
+  try {
+    const missions = await listStoreMissions(req.params.storeId);
+    res.status(StatusCodes.OK).json(missions);
+  } catch (error) {
+    console.log(error);
   }
 };

@@ -9,6 +9,8 @@ import {
 import {
   handleChallengeMission,
   handleListUserMissions,
+  handleListStoreMissions,
+  handleMissionSuccess,
 } from "./controllers/mission.controller.js";
 import {
   handleRegisterStore,
@@ -34,10 +36,15 @@ app.post("/api/v1/review", handleWriteReview);
 app.post("/api/v1/missions/challenge", handleChallengeMission);
 app.post("/api/v1/stores/registration", handleRegisterStore);
 app.post("/api/v1/stores/add-mission", handleRegisterMission);
+app.put(
+  "/api/v1/missions/user/mission-success",
+  setUserIdFromAuthorizationHeader,
+  handleMissionSuccess
+);
 
 // app.get("/api/v1/my-mission/:userId/list", handleListUserMissions);
 app.get(
-  "/api/v1/my-mission/list",
+  "/api/v1/missions/user/list",
   setUserIdFromAuthorizationHeader,
   handleListUserMissions
 );
@@ -47,6 +54,8 @@ app.get(
   setUserIdFromAuthorizationHeader,
   handleListUserReviews
 );
+
+app.get("/api/vi/missions/:storeId/list", handleListStoreMissions);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

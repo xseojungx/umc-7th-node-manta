@@ -91,3 +91,15 @@ export const getReview = async (reviewId) => {
   //   conn.release();
   // }
 };
+
+export const getUserReviewsByUserId = async (userId) => {
+  const reviews = await prisma.myReview.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      review: true,
+    },
+  });
+  return reviews;
+};

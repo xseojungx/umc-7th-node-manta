@@ -140,7 +140,7 @@ model MyMission {
   userId         Int       @map("user_id")
   missionId      Int       @map("mission_id")
   verifyNumber   Int?       @map("verify_number")
-  status         MissionStatus @default(pending)
+  status         MissionStatus @default(ongoing)
   createdAt      DateTime  @default(now()) @map("created_at") @db.DateTime(6)
   updatedAt      DateTime? @updatedAt @map("updated_at") @db.DateTime(6)
   deletedAt      DateTime? @map("deleted_at") @db.DateTime(6)
@@ -220,8 +220,8 @@ enum Gender {
 }
 
 enum MissionStatus {
-  pending
-  approved
+  success
+  ongoing
   rejected
 }
 
