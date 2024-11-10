@@ -1,0 +1,231 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "mysql"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String?   @unique(map: "email") @db.VarChar(40)
+  name          String?   @db.VarChar(10)
+  nickname      String?   @db.VarChar(15)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt     DateTime? @updatedAt @map("updated_at") @db.DateTime(6)
+  inactiveDate  DateTime? @map("inactive_date") @db.DateTime(6)
+  deletedAt     String?   @map("deleted_at") @db.VarChar(255)
+  status        Status    @default(active)
+  totalPoint    Int       @map("total_point") @default(0)
+  gender        Gender?
+  birth         DateTime? @db.Date
+  address       String?   @db.VarChar(225)
+  detailAddress String?   @map("detail_address") @db.VarChar(225)
+
+  pointList     PointList[]
+  myMission     MyMission[]
+  review        Review[]
+  myReview      MyReview[]
+  inquiry       Inquiry[]
+  myPreferences MyPreferences[]
+
+  @@map("user")
+}
+
+model PointList {
+  id         Int       @id @default(autoincrement())
+  point      Int?
+  title      String?   @db.VarChar(20)
+  content    String?   @db.VarChar(225)
+  date       DateTime? @db.DateTime(6)
+  userId     Int       @map("user_id")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.DateTime(6)
+  deletedAt  DateTime? @map("deleted_at") @db.DateTime(6)
+  status     Status?
+
+  user       User      @relation(fields: [userId], references: [id])
+  reviewId   Int       @map("review_id")
+
+  @@map("point_list")
+}
+
+model StoreOwner {
+  id         Int       @id @default(autoincrement())
+  ownerName  String?   @db.VarChar(15) @map("owner_name")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.DateTime(6)
+  deletedAt  DateTime? @map("deleted_at") @db.DateTime(6)
+  status     Status?
+
+  store      Store[]
+
+  @@map("store_owner")
+}
+
+model Location {
+  id         Int       @id @default(autoincrement())
+  name       String?   @db.VarChar(30)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.DateTime(6)
+
+  store      Store[]
+
+  @@map("location")
+}
+
+
+model Mission {
+  id         Int       @id @default(autoincrement())
+  minPrice   Int?      @map("min_price")
+  reward     Float?
+  status     Status    @default(active)
+  storeId    Int       @map("store_id")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.DateTime(6)
+  deletedAt  DateTime? @map("deleted_at") @db.DateTime(6)
+
+  store      Store     @relation(fields: [storeId], references: [id])
+  myMission  MyMission[]
+
+  @@map("mission")
+}
+
+model Store {
+  id         Int       @id @default(autoincrement())
+  storeName  String?   @db.VarChar(30) @map("store_name")
+  locationId Int?      @map("location_id")
+  ownerId    Int       @map("owner_id")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.DateTime(6)
+  deletedAt  DateTime? @map("deleted_at") @db.DateTime(6)
+  status     Status    @default(active)
+
+  location   Location? @relation(fields: [locationId], references: [id])
+  storeOwner StoreOwner @relation(fields: [ownerId], references: [id]) 
+
+  mission    Mission[]
+  review     Review[]
+  inquiry    Inquiry[]  // Add this relation field to connect to Inquiry
+
+  @@map("store")
+}
+
+model Inquiry {
+  id         Int       @id @default(autoincrement())
+  storeId    Int       @map("store_id")
+  userId     Int       @map("user_id")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.DateTime(6)
+  deletedAt  DateTime? @map("deleted_at") @db.DateTime(6)
+
+  user       User      @relation(fields: [userId], references: [id])
+  store      Store     @relation(fields: [storeId], references: [id])
+
+  @@map("inquiry")
+}
+
+
+model MyMission {
+  id             Int       @id @default(autoincrement())
+  requestApproval Boolean? @map("request_approval")
+  userId         Int       @map("user_id")
+  missionId      Int       @map("mission_id")
+  verifyNumber   Int?       @map("verify_number")
+  status         MissionStatus @default(pending)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt      DateTime? @updatedAt @map("updated_at") @db.DateTime(6)
+  deletedAt      DateTime? @map("deleted_at") @db.DateTime(6)
+
+  user           User      @relation(fields: [userId], references: [id])
+  mission        Mission   @relation(fields: [missionId], references: [id])
+
+  @@map("my_mission")
+}
+
+model Review {
+  id         Int       @id @default(autoincrement())
+  storeId    Int       @map("store_id")
+  userId     Int       @map("user_id")
+  title      String?   @db.VarChar(30)
+  content    String?   @db.Text
+  isPhoto    Boolean?  @map("is_photo")
+  photoLink  String?   @db.VarChar(255) @map("photo_link")
+  rate       Decimal?  @db.Decimal(2,1)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.DateTime(6)
+  deletedAt  DateTime? @map("deleted_at") @db.DateTime(6)
+  status     ReviewStatus @default(published)
+
+  user       User      @relation(fields: [userId], references: [id])
+  store      Store     @relation(fields: [storeId], references: [id])
+  myReview   MyReview[]
+
+  @@map("review")
+}
+
+model MyReview {
+  userId     Int       @map("user_id")
+  reviewId   Int       @map("review_id")
+
+  user       User      @relation(fields: [userId], references: [id])
+  review     Review    @relation(fields: [reviewId], references: [id])
+
+  @@id([userId, reviewId])
+  @@map("my_review")
+}
+
+
+
+model Preferences {
+  id         Int       @id @default(autoincrement())
+  foodType   String?   @db.VarChar(10) @map("food_type")
+
+  myPreferences MyPreferences[]
+
+  @@map("preferences")
+}
+
+model MyPreferences {
+  userId         Int       @map("user_id")
+  preferencesId  Int       @map("preferences_id")
+  createdAt      DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt      DateTime? @updatedAt @map("updated_at") @db.DateTime(6)
+  deletedAt      DateTime? @map("deleted_at") @db.DateTime(6)
+
+  user           User        @relation(fields: [userId], references: [id])
+  preferences    Preferences @relation(fields: [preferencesId], references: [id])
+
+  @@id([userId, preferencesId])
+  @@map("my_preferences")
+}
+
+enum Status {
+  active
+  inactive
+  deleted
+}
+
+enum Gender {
+  male
+  female
+}
+
+enum MissionStatus {
+  pending
+  approved
+  rejected
+}
+
+enum ReviewStatus {
+  published
+  unpublished
+  deleted
+}
