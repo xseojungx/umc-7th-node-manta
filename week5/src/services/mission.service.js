@@ -6,13 +6,14 @@ import {
   changeUserMissionToSuccess,
 } from "../repositories/mission.repository.js";
 import { responseFromMyMission } from "../dtos/mission.dto.js";
+import { DuplicateChallengeMissionError } from "../errors.js";
 
 export const challengeMission = async (data) => {
   // 미션 도전 추가
   const myMissionId = await addMissionChallenge(data.userId, data.myMissionId);
 
   if (!myMissionId === null) {
-    throw new Error("이미 도전 중인 미션이거나 오류가 발생했습니다.");
+    throw new DuplicateChallengeMissionError("이미 도전중인 미션입니다.", data);
   }
 
   const mission = await getUserMissionInfo(myMissionId);

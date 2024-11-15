@@ -7,13 +7,13 @@ import { responseFromReview } from "../dtos/review.dto.js";
 
 export const writeReview = async (data) => {
   const newReviewId = await addReview({
-    storeId: data.storeId,
-    userId: data.userId,
+    storeId: parseInt(data.storeId),
+    userId: parseInt(data.userId),
     title: data.title,
     content: data.content,
-    isPhoto: data.isPhoto,
+    isPhoto: Boolean(data.isPhoto),
     photoLink: data.photoLink,
-    rate: data.rate,
+    rate: parseFloat(data.rate),
   });
 
   const reviews = await getReview(newReviewId);

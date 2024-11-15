@@ -31,7 +31,8 @@ export const handleMissionSuccess = async (req, res, next) => {
 export const handleListUserMissions = async (req, res, next) => {
   try {
     const missions = await listUserMissions(req.userId); // req.userId에서 userId를 가져옴
-    res.status(StatusCodes.OK).json(missions);
+    // res.status(StatusCodes.OK).json(missions);
+    res.status(StatusCodes.OK).success(missions);
   } catch (error) {
     next(error);
   }
@@ -40,7 +41,7 @@ export const handleListUserMissions = async (req, res, next) => {
 export const handleListStoreMissions = async (req, res, next) => {
   try {
     const missions = await listStoreMissions(req.params.storeId);
-    res.status(StatusCodes.OK).json(missions);
+    res.status(StatusCodes.OK).success(missions);
   } catch (error) {
     console.log(error);
   }

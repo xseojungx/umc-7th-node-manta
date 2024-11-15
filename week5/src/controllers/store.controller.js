@@ -7,13 +7,14 @@ export const handleRegisterStore = async (req, res, next) => {
   console.log("body:", req.body); // 값이 잘 들어오나 확인하기 위한 테스트용
 
   const store = await registerStore(bodyToStore(req.body));
-  res.status(StatusCodes.OK).json({ result: store });
+  res.status(StatusCodes.OK).success(store);
 };
 
+//가게가 미션 등록하는거임
 export const handleRegisterMission = async (req, res, next) => {
   console.log("미션 등록을 요청했습니다!");
   console.log("body:", req.body); // 값이 잘 들어오나 확인하기 위한 테스트용
 
   const mission = await registerMission(bodyToRegMission(req.body));
-  res.status(StatusCodes.OK).json({ result: mission });
+  res.status(StatusCodes.OK).success(mission);
 };
