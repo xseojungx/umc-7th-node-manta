@@ -5,7 +5,7 @@ export const bodyToStore = (body) => {
     ownerId: body.ownerId,
   };
 };
-
+//user.dto 참고해서 수정 필요
 export const responseFromStore = ({ store }) => {
   return {
     store: store.map((data) => data),
