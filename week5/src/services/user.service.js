@@ -4,6 +4,8 @@ import {
   getUser,
   getUserPreferencesByUserId,
   setPreference,
+  updateUserInfo,
+  updatePreference,
 } from "../repositories/user.repository.js";
 import { DuplicateUserEmailError } from "../errors.js";
 
@@ -28,6 +30,30 @@ export const userSignUp = async (data) => {
 
   const user = await getUser(joinUserId);
   const preferences = await getUserPreferencesByUserId(joinUserId);
+
+  return responseFromUser({ user, preferences });
+};
+
+export const userSignUpInfo = async (data) => {
+  const updateUserInfoResult = await updateUserInfo({
+    userId: data.userId,
+    nickname: data.nickname,
+    gender: data.gender,
+    birth: data.birth,
+    address: data.address,
+    detailAddress: data.detailAddress,
+  });
+  //에러코드 수정하기
+  if (updateUserInfoResult === null) {
+    throw new DuplicateUserEmailError("실패.", data);
+  }
+
+  for (const preferences of data.preferences) {
+    await setPreference(data.userId, preferences);
+  }
+
+  const user = await getUser(data.userId);
+  const preferences = await getUserPreferencesByUserId(data.userId);
 
   return responseFromUser({ user, preferences });
 };

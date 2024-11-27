@@ -13,6 +13,20 @@ export const bodyToUser = (body) => {
   };
 };
 
+export const bodyToUserInfo = (userId, body) => {
+  const birth = new Date(body.birth);
+  console.log(userId);
+  return {
+    userId: userId,
+    nickname: body.nickname,
+    gender: body.gender,
+    birth,
+    address: body.address || "",
+    detailAddress: body.detailAddress || "",
+    preferences: body.preferences,
+  };
+};
+
 export const responseFromUser = ({ user, preferences }) => {
   const preferFoods = preferences.map((pref) => pref.preferencesId);
   return {

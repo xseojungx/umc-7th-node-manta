@@ -1,7 +1,10 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import { handleUserSignUp } from "./controllers/user.controller.js";
+import {
+  handleUserSignUp,
+  handleUserInfo,
+} from "./controllers/user.controller.js";
 import {
   handleWriteReview,
   handleListUserReviews,
@@ -70,7 +73,6 @@ app.get(
   }),
   (req, res) => res.redirect("/")
 );
-
 /**
  * 공통 응답을 사용할 수 있는 헬퍼 함수 등록
  */
@@ -139,6 +141,12 @@ app.put(
   "/api/v1/missions/user/mission-success",
   setUserIdFromAuthorizationHeader,
   handleMissionSuccess
+);
+
+app.put(
+  "/api/v1/users/signuup-info",
+  setUserIdFromAuthorizationHeader,
+  handleUserInfo
 );
 
 // app.get("/api/v1/my-mission/:userId/list", handleListUserMissions);

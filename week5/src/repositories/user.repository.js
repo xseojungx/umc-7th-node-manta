@@ -10,38 +10,28 @@ export const addUser = async (data) => {
   }
   const created = await prisma.user.create({ data: data });
   return created.id;
+};
 
-  // try {
-  //   const [confirm] = await pool.query(
-  //     `SELECT EXISTS(SELECT * FROM user WHERE email = ?) as isExistEmail;`,
-  //     [data.email]
-  //   );
+export const updateUserInfo = async (data) => {
+  const user = await prisma.user.findFirst({ where: { id: data.userId } });
 
-  //   if (confirm[0].isExistEmail) {
-  //     return null;
-  //   }
-
-  //   const [result] = await pool.query(
-  //     `INSERT INTO user (email, name, nickname, gender, birth, address, detail_address) VALUES (?, ?, ?, ?, ?, ?, ?);`,
-  //     [
-  //       data.email,
-  //       data.name,
-  //       data.nickname,
-  //       data.gender,
-  //       data.birth,
-  //       data.address,
-  //       data.detailAddress,
-  //     ]
-  //   );
-
-  //   return result.insertId;
-  // } catch (err) {
-  //   throw new Error(
-  //     `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err})`
-  //   );
-  // } finally {
-  //   conn.release();
-  // }
+  if (!user) {
+    return null;
+  } else {
+    const upadateResult = await prisma.user.update({
+      where: {
+        id: data.userId,
+      },
+      data: {
+        nickname: data.nickname,
+        gender: data.gender,
+        birth: data.birth,
+        address: data.address,
+        detailAddress: data.detailAddress,
+      },
+    });
+    return upadateResult;
+  }
 };
 
 // 사용자 정보 얻기
