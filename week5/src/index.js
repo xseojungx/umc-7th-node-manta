@@ -19,8 +19,19 @@ import {
 import { setUserIdFromAuthorizationHeader } from "./middleware/setUserIdFromAuthorizationHeader.js";
 import swaggerAutogen from "swagger-autogen";
 import swaggerUiExpress from "swagger-ui-express";
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import session from "express-session";
+import passport from "passport";
+import { googleStrategy } from "./auth.config.js";
+import { prisma } from "./db.config.js";
 
 dotenv.config();
+
+//우리가 사용한 로그인 방식
+passport.use(googleStrategy);
+//세션 정보 저장, 세션 정보 가져오는 함수
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
 
 const app = express();
 const port = process.env.PORT;
@@ -28,6 +39,37 @@ app.use(express.json()); // request의 본문을 json으로 해석할 수 있도
 app.use(cors()); // cors 방식 허용
 app.use(express.static("public")); // 정적 파일 접근
 app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
+
+//9주차 google auth
+//sid를 프엔에 저장, 이에 연결되는 사용자 데이터는 디비에 저장
+app.use(
+  session({
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // ms
+    },
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.EXPRESS_SESSION_SECRET,
+    store: new PrismaSessionStore(prisma, {
+      checkPeriod: 2 * 60 * 1000, // ms
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
+  })
+);
+app.use(passport.initialize());
+//사용자 요청에 sid 값이 있아면 디비에서 찾아서 req.user
+app.use(passport.session());
+
+app.get("/oauth2/login/google", passport.authenticate("google"));
+app.get(
+  "/oauth2/callback/google",
+  passport.authenticate("google", {
+    failureRedirect: "/oauth2/login/google",
+    failureMessage: true,
+  }),
+  (req, res) => res.redirect("/")
+);
 
 /**
  * 공통 응답을 사용할 수 있는 헬퍼 함수 등록
@@ -49,6 +91,8 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
+  // #swagger.ignore = true
+  console.log(req.user);
   res.send("Hello World!");
 });
 
@@ -120,7 +164,7 @@ app.use((err, req, res, next) => {
     return next(err);
   }
 
-  res.status(err.statusCode || 500).error({
+  res.status(err.statusCode || 500).json({
     errorCode: err.errorCode || "unknown",
     reason: err.reason || err.message || null,
     data: err.data || null,
