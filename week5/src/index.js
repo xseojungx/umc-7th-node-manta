@@ -25,13 +25,14 @@ import swaggerUiExpress from "swagger-ui-express";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import session from "express-session";
 import passport from "passport";
-import { googleStrategy } from "./auth.config.js";
+import { googleStrategy, kakaoStrategy } from "./auth.config.js";
 import { prisma } from "./db.config.js";
 
 dotenv.config();
 
 //우리가 사용한 로그인 방식
 passport.use(googleStrategy);
+passport.use(kakaoStrategy);
 //세션 정보 저장, 세션 정보 가져오는 함수
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user, done) => done(null, user));
@@ -69,6 +70,16 @@ app.get(
   "/oauth2/callback/google",
   passport.authenticate("google", {
     failureRedirect: "/oauth2/login/google",
+    failureMessage: true,
+  }),
+  (req, res) => res.redirect("/")
+);
+//kakao
+app.get("/oauth2/login/kakao", passport.authenticate("kakao"));
+app.get(
+  "/oauth2/callback/kakao",
+  passport.authenticate("kakao", {
+    failureRedirect: "/oauth2/login/kakao",
     failureMessage: true,
   }),
   (req, res) => res.redirect("/")
