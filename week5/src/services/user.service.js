@@ -5,7 +5,6 @@ import {
   getUserPreferencesByUserId,
   setPreference,
   updateUserInfo,
-  updatePreference,
 } from "../repositories/user.repository.js";
 import { DuplicateUserEmailError } from "../errors.js";
 

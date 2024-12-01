@@ -76,7 +76,7 @@ const kakaoVerify = async (profile) => {
   const created = await prisma.user.create({
     data: {
       email,
-      name: profile.displayName,
+      name: profile.username,
       gender: "female",
       birth: new Date(1970, 0, 1),
       address: "추후 수정",
